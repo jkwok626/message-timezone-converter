@@ -40,16 +40,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String conInput = '';
 
+  String dropdownValue = 'CST';
+
   updateText() {
     setState(() {
       conInput = inputCont.text;
+      if (conInput.contains(':')) {
+        conInput = conInput;
+      } else {
+        conInput = 'Your message did not contain a time in the format of HH:MM';
+      }
     });
   }
 
-  //String test = DateTime.now().timeZoneOffset.toString();
-
   @override
   Widget build(BuildContext context) {
+
+    //Duration est = Duration(hours: -5);
+    //Duration test = DateTime.now().timeZoneOffset - est;
+    //print(test);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Center(
@@ -59,24 +68,37 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: 30),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(
-                        child: Text('Dropdown 1'),
-                        onPressed: () {
-
-                        }
-                    ),
-                    ElevatedButton(
-                        child: Text('Dropdown 2'),
-                        onPressed: () {
-
-                        }
-                    ),
-                  ]
+              Text(
+                'Choose a timezone to convert from: ',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: 15),
+              DropdownButton<String>(
+                  value: dropdownValue,
+                  //icon: Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 16,
+                  underline: SizedBox(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue!;
+                    });
+                  },
+                  items: <String>['CST', 'EST', 'PST']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+              ),
+              SizedBox(height: 10),
               TextField(
                 controller: inputCont,
                 decoration: InputDecoration(
