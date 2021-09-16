@@ -40,13 +40,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String conInput = '';
 
-  String dropdownValue = 'CST';
+  String dropdownValue = 'Central Standard Time (CST)';
 
   updateText() {
     setState(() {
-      conInput = inputCont.text;
-      if (conInput.contains(':')) {
-        conInput = conInput;
+      //conInput = inputCont.text;
+      if (inputCont.text.contains(':')) {
+        for (int i = 0; i < inputCont.text.length; i++) {
+          // Get the index of the colon
+          if (inputCont.text[i] == ':') {
+
+            // Check if the character before the colon is a number
+            if (inputCont.text[i - 1].contains(new RegExp(r'[0-9]'))) {
+              int? storeHour = int.parse(inputCont.text[i - 1]);
+              print(storeHour);
+
+              Duration conversionOffset = Duration(hours: -5);
+
+              switch(dropdownValue) {
+                case 'Central Standard Time (CST)': {
+                  conversionOffset = Duration(hours: -5);
+                }
+                break;
+
+                case 'Eastern Standard Time (EST)': {
+                  conversionOffset = Duration(hours: -4);
+                }
+                break;
+
+                case 'Pacific Standard Time (PST)': {
+                  conversionOffset = Duration(hours: -7);
+                }
+                break;
+              }
+
+              String newHour = (conversionOffset - DateTime.now().timeZoneOffset).toString();
+              print(newHour);
+
+              storeHour = storeHour + int.parse(newHour[0]);
+              conInput = inputCont.text.replaceFirst(RegExp(inputCont.text[i - 1] + ':'), storeHour.toString() + ':');
+
+              // If the user enters a time after 12:00, restart the count
+              // (e.g. 1, 2, 3)
+              if (conInput.contains('13:')) {
+                conInput = conInput.replaceFirst(RegExp('13:'), '1:');
+              } else if (conInput.contains('14:')) {
+                conInput = conInput.replaceFirst(RegExp('14:'), '2:');
+              } else if (conInput.contains('15:')) {
+                conInput = conInput.replaceFirst(RegExp('15:'), '3:');
+              }
+            }
+          }
+        }
       } else {
         conInput = 'Your message did not contain a time in the format of HH:MM';
       }
@@ -90,8 +135,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       dropdownValue = newValue!;
                     });
                   },
-                  items: <String>['CST', 'EST', 'PST']
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items: <String>[
+                    'Central Standard Time (CST)',
+                    'Eastern Standard Time (EST)',
+                    'Pacific Standard Time (PST)',
+                  ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -122,7 +170,16 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  child: Text('Convert'),
+                  child: Text(
+                    'Convert',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.deepPurpleAccent,
+                  ),
                   onPressed: () {
                     updateText();
                   },
