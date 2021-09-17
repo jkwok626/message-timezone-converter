@@ -77,6 +77,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 break;
 
+                case 'Hawaii Standard Time (HST)': {
+                  conversionOffset = Duration(hours: -10);
+                }
+                break;
+
+                case 'Mountain Standard Time (MST)': {
+                  if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
+                    conversionOffset = Duration(hours: -6);
+                  } else {
+                    conversionOffset = Duration(hours: -7);
+                  }
+                }
+                break;
+
                 case 'Pacific Standard Time (PST)': {
                   if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
                     conversionOffset = Duration(hours: -7);
@@ -89,10 +103,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
               // Get the user's timezone offset and subtract it from the
               // conversionOffset. 
-              String newHour = (conversionOffset - DateTime.now().timeZoneOffset).toString();
-              print(newHour);
+              String offsetString = (conversionOffset - DateTime.now().timeZoneOffset).toString();
+              print(offsetString);
+              List<String> offsetDifference = offsetString.split(':');
 
-              storeHour = storeHour + int.parse(newHour[0]);
+              storeHour = storeHour + int.parse(offsetDifference[0]);
               conInput = inputCont.text.replaceFirst(RegExp(inputCont.text[i - 1] + ':'), storeHour.toString() + ':');
 
               // If the user enters a time after 12:00, restart the count
@@ -153,6 +168,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   items: <String>[
                     'Central Standard Time (CST)',
                     'Eastern Standard Time (EST)',
+                    'Hawaii Standard Time (HST)',
+                    'Mountain Standard Time (MST)',
                     'Pacific Standard Time (PST)',
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
@@ -192,8 +209,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontSize: 20,
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.deepPurpleAccent,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.deepPurpleAccent),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
                   onPressed: () {
                     updateText();
