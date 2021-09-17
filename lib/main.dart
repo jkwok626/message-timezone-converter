@@ -55,25 +55,40 @@ class _MyHomePageState extends State<MyHomePage> {
               int? storeHour = int.parse(inputCont.text[i - 1]);
               print(storeHour);
 
+              // Depending on which timezone the user chose, set
+              // set conversionOffset to the UTC time offset for that timezone
               Duration conversionOffset = Duration(hours: -5);
-
               switch(dropdownValue) {
                 case 'Central Standard Time (CST)': {
-                  conversionOffset = Duration(hours: -5);
+                  if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
+                    conversionOffset = Duration(hours: -5);
+                  } else {
+                    conversionOffset = Duration(hours: -6);
+                  }
                 }
                 break;
 
                 case 'Eastern Standard Time (EST)': {
-                  conversionOffset = Duration(hours: -4);
+                  if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
+                    conversionOffset = Duration(hours: -4);
+                  } else {
+                    conversionOffset = Duration(hours: -5);
+                  }
                 }
                 break;
 
                 case 'Pacific Standard Time (PST)': {
-                  conversionOffset = Duration(hours: -7);
+                  if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
+                    conversionOffset = Duration(hours: -7);
+                  } else {
+                    conversionOffset = Duration(hours: -8);
+                  }
                 }
                 break;
               }
 
+              // Get the user's timezone offset and subtract it from the
+              // conversionOffset. 
               String newHour = (conversionOffset - DateTime.now().timeZoneOffset).toString();
               print(newHour);
 
