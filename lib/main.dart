@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false,
@@ -9,6 +10,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Limits the orientation to portrait mode
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Message Timezone Converter',
@@ -30,6 +37,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Controller used for collecting user's message input
   final inputCont = TextEditingController();
 
   @override
@@ -38,13 +46,14 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  // String that is returned to the user after they hit the convert button
   String conInput = '';
 
+  // Displays CST as the default option for the dropdown button
   String dropdownValue = 'Central Standard Time (CST)';
 
   updateText() {
     setState(() {
-      //conInput = inputCont.text;
       if (inputCont.text.contains(':')) {
         for (int i = 0; i < inputCont.text.length; i++) {
           // Get the index of the colon
@@ -52,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
             // Check if the character before the colon is a number
             if (inputCont.text[i - 1].contains(new RegExp(r'[0-9]'))) {
+              // Store the hour value of the time in the user's message
               int? storeHour = int.parse(inputCont.text[i - 1]);
               print(storeHour);
 
@@ -60,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Duration conversionOffset = Duration(hours: -5);
               switch(dropdownValue) {
                 case 'Central Standard Time (CST)': {
+                  // If it is currently daylight savings time, convert to CDT
                   if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
                     conversionOffset = Duration(hours: -5);
                   } else {
@@ -69,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 break;
 
                 case 'Eastern Standard Time (EST)': {
+                  // If it is currently daylight savings time, convert to EDT
                   if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
                     conversionOffset = Duration(hours: -4);
                   } else {
@@ -83,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 break;
 
                 case 'Mountain Standard Time (MST)': {
+                  // If it is currently daylight savings time, convert to MDT
                   if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
                     conversionOffset = Duration(hours: -6);
                   } else {
@@ -92,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 break;
 
                 case 'Pacific Standard Time (PST)': {
+                  // If it is currently daylight savings time, convert to PDT
                   if (DateTime(2021, 3, 14).isBefore(DateTime.now()) && DateTime(2021, 11, 7).isAfter(DateTime.now())) {
                     conversionOffset = Duration(hours: -7);
                   } else {
@@ -102,9 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
               }
 
               // Get the user's timezone offset and subtract it from the
-              // conversionOffset. 
+              // conversionOffset. This gives us the difference between the
+              // user's current timezone and the timezone that we're converting
+              // from. This difference is of type Duration but convert it to a
+              // String first so that it can be parsed into an int later.
               String offsetString = (conversionOffset - DateTime.now().timeZoneOffset).toString();
               print(offsetString);
+
+              // Split the String based on the colons so that we can easily
+              // parse the numbers.
               List<String> offsetDifference = offsetString.split(':');
 
               storeHour = storeHour + int.parse(offsetDifference[0]);
@@ -131,15 +151,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    //Duration est = Duration(hours: -5);
-    //Duration test = DateTime.now().timeZoneOffset - est;
-    //print(test);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Center(
         child: Padding(
           padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
           child: Column(
+            // Starts laying out widgets in a column from the top of the screen
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: 30),
@@ -150,6 +168,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
+              // Dropdown for selecting timezone
               DropdownButton<String>(
                   value: dropdownValue,
                   //icon: Icon(Icons.arrow_downward),
@@ -179,6 +199,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   }).toList(),
               ),
               SizedBox(height: 10),
+
+              // Textfield for user to enter message
               TextField(
                 controller: inputCont,
                 decoration: InputDecoration(
@@ -201,6 +223,8 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(height: 3),
               SizedBox(
                 width: double.infinity,
+
+                // Convert button
                 child: ElevatedButton(
                   child: Text(
                     'Convert',
@@ -235,8 +259,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
                   child: Text(
+                    // Fill in bottom box with either the converted message or
+                    // an error message
                     '$conInput',
-                    //'${test[0]}${test[1]}',
                     style: TextStyle(
                       fontSize: 16,
                     ),
