@@ -1,16 +1,5 @@
-# message_timezone_converter
+# Message Timezone Converter
 
-Paste a message with a time (HH:MM) in it and watch it get converted into your own timezone.
+Many mesaging apps on mobile don't allow users to copy individual parts of messages, which means that it's difficult to select a timestamp in a message. With the Message Timezone Converter, you can copy an entire message, select the timezone you're converting from, and watch the timestamp get converted into your device's tiemzone. 
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+You can read more about this here: https://jackie-kwok-portfolio.web.app/mtc.html
